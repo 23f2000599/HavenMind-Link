@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🧠 HavenMind Link - AI Sentinel for Student Wellbeing
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
@@ -219,3 +220,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Made with ❤️ for student mental health and wellbeing.
+=======
+# HavenMind-Link
+>>>>>>> f55b210a35d8f2874d7e0207c658209c8b04ff13
