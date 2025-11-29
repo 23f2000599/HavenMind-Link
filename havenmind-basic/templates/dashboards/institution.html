@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Institution Dashboard - HavenMind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <img src="/static/logo.PNG" alt="HavenMind Logo" class="h-8 w-8">
+                    <!-- <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div> -->
+                    <div>
+                        <span class="font-bold text-xl text-slate-900">HavenMind</span>
+                        <p class="text-xs text-slate-500">Institution Portal</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    
+                    <div class="flex items-center space-x-3">
+                        <div class="relative">
+                            <!-- <button class="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center hover:bg-slate-200 transition-colors">
+                                <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4 19h6v-2H4v2zM4 15h8v-2H4v2zM4 11h10V9H4v2z"></path>
+                                </svg>
+                            </button> -->
+                            <div class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-2 bg-slate-100 rounded-lg px-3 py-2">
+                            <div class="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
+                                <span class="text-white text-sm font-semibold">{{ user.username[0].upper() }}</span>
+                            </div>
+                            <span class="text-slate-700 text-sm font-medium hidden sm:block">{{ user.username }}</span>
+                        </div>
+                        
+                        <a href="{{ url_for('logout') }}" class="bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-red-200">
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <h2 class="text-4xl font-bold text-slate-900 mb-2">{{ institution }}</h2>
+                    <p class="text-slate-600 text-lg">Student Mental Health Management Dashboard</p>
+                    <div class="flex items-center space-x-4 mt-3">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span class="text-green-600 text-sm font-medium">System Operational</span>
+                        </div>
+                        <div class="text-slate-500 text-sm">Last updated: Just now</div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 lg:mt-0">
+                    <a href="{{ url_for('generate_monthly_report') }}" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span>Generate Monthly Report</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Students -->
+            <div class="bg-white rounded-2xl p-6 card-hover border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 rounded-xl bg-blue-50">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-green-600 font-medium">+12% this month</div>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Total Students</p>
+                    <p class="text-3xl font-bold text-slate-900">{{ total_students }}</p>
+                    <p class="text-xs text-slate-400 mt-1">Active users</p>
+                </div>
+            </div>
+
+            <!-- Wellness Score -->
+            <div class="bg-white rounded-2xl p-6 card-hover border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 rounded-xl {% if wellness_score >= 70 %}bg-green-50{% elif wellness_score >= 50 %}bg-yellow-50{% else %}bg-red-50{% endif %}">
+                        <svg class="w-6 h-6 {% if wellness_score >= 70 %}text-green-600{% elif wellness_score >= 50 %}text-yellow-600{% else %}text-red-600{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs {% if wellness_score >= 70 %}text-green-600{% elif wellness_score >= 50 %}text-yellow-600{% else %}text-red-600{% endif %} font-medium">
+                            {% if wellness_score >= 70 %}Excellent{% elif wellness_score >= 50 %}Good{% else %}Needs Attention{% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Wellness Score</p>
+                    <p class="text-3xl font-bold {% if wellness_score >= 70 %}text-green-600{% elif wellness_score >= 50 %}text-yellow-600{% else %}text-red-600{% endif %}">{{ wellness_score }}/100</p>
+                    <div class="w-full bg-slate-200 rounded-full h-2 mt-2">
+                        <div class="{% if wellness_score >= 70 %}bg-green-500{% elif wellness_score >= 50 %}bg-yellow-500{% else %}bg-red-500{% endif %} h-2 rounded-full transition-all duration-500" style="width: {{ wellness_score }}%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crisis Indicators -->
+            <div class="bg-white rounded-2xl p-6 card-hover border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 rounded-xl {% if crisis_count > 10 %}bg-red-50{% elif crisis_count > 5 %}bg-yellow-50{% else %}bg-green-50{% endif %}">
+                        <svg class="w-6 h-6 {% if crisis_count > 10 %}text-red-600{% elif crisis_count > 5 %}text-yellow-600{% else %}text-green-600{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs {% if crisis_count > 10 %}text-red-600{% elif crisis_count > 5 %}text-yellow-600{% else %}text-green-600{% endif %} font-medium">
+                            {% if crisis_count > 10 %}High Risk{% elif crisis_count > 5 %}Medium Risk{% else %}Low Risk{% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Crisis Indicators</p>
+                    <p class="text-3xl font-bold {% if crisis_count > 10 %}text-red-600{% elif crisis_count > 5 %}text-yellow-600{% else %}text-green-600{% endif %}">{{ crisis_count }}</p>
+                    <p class="text-xs text-slate-400 mt-1">Last 30 days</p>
+                </div>
+            </div>
+
+            <!-- Support Requests -->
+            <div class="bg-white rounded-2xl p-6 card-hover border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 rounded-xl bg-indigo-50">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-indigo-600 font-medium">+8% this week</div>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-slate-500 mb-1">Support Requests</p>
+                    <p class="text-3xl font-bold text-slate-900">{{ support_requests }}</p>
+                    <p class="text-xs text-slate-400 mt-1">Last 30 days</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wellness Analytics Buttons -->
+        <div class="flex flex-wrap gap-3 mb-8">
+            <a href="{{ url_for('institution_students') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                University Wellness Overview
+            </a>
+            <a href="{{ url_for('institution_department_analysis') }}" class="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                Department Analysis
+            </a>
+            <a href="{{ url_for('institution_wellness_trends') }}" class="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                Wellness Trends
+            </a>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Stress Level Chart -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-semibold text-slate-900">Stress Level Distribution</h3>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="text-xs text-slate-500">Live Data</span>
+                    </div>
+                </div>
+                <div class="relative">
+                    <canvas id="stressChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- Institution Analytics -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <h3 class="text-xl font-semibold text-slate-900 mb-6">Institution Analytics</h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-slate-600 font-medium">Average Wellness Score</span>
+                            <span class="text-slate-900 font-bold text-lg">{{ "%.1f"|format(avg_mood * 100) }}%</span>
+                        </div>
+                        <div class="w-full bg-slate-200 rounded-full h-3">
+                            <div class="{% if avg_mood >= 0.7 %}bg-gradient-to-r from-green-400 to-green-500{% elif avg_mood >= 0.5 %}bg-gradient-to-r from-yellow-400 to-yellow-500{% else %}bg-gradient-to-r from-red-400 to-red-500{% endif %} h-3 rounded-full transition-all duration-1000" style="width: {{ avg_mood * 100 }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-50 rounded-xl p-4">
+                            <p class="text-slate-500 text-sm mb-1">Platform Engagement</p>
+                            <p class="text-slate-900 font-bold text-xl">{{ total_entries }}</p>
+                            <p class="text-xs text-slate-400">Total entries</p>
+                        </div>
+                        <div class="bg-slate-50 rounded-xl p-4">
+                            <p class="text-slate-500 text-sm mb-1">Active Users</p>
+                            <p class="text-slate-900 font-bold text-xl">{{ total_students }}</p>
+                            <p class="text-xs text-slate-400">Last 30 days</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- AI Insights -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-slate-900">AI-Powered Insights & Recommendations</h3>
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    <span class="text-xs text-blue-600">AI Analysis</span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="p-2 rounded-lg bg-green-100">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-green-700 font-medium text-sm mb-1">Positive Trend</h4>
+                            <p class="text-green-600 text-xs">Student wellness metrics show improvement over the past month</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="p-2 rounded-lg bg-blue-100">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-blue-700 font-medium text-sm mb-1">Recommendation</h4>
+                            <p class="text-blue-600 text-xs">Expand peer support programs during exam periods</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                    <div class="flex items-start space-x-3">
+                        <div class="p-2 rounded-lg bg-yellow-100">
+                            <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-yellow-700 font-medium text-sm mb-1">Action Required</h4>
+                            <p class="text-yellow-600 text-xs">Schedule additional counselor training sessions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Stress Level Distribution Chart
+        const ctx = document.getElementById('stressChart').getContext('2d');
+        const stressData = {{ stress_distribution | tojson }};
+        
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(stressData),
+                datasets: [{
+                    data: Object.values(stressData),
+                    backgroundColor: [
+                        '#10B981', // green
+                        '#F59E0B', // yellow
+                        '#EF4444', // red
+                        '#DC2626'  // dark red
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#64748B',
+                            padding: 20,
+                            usePointStyle: true,
+                            font: {
+                                size: 12,
+                                family: 'Inter'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1E293B',
+                        bodyColor: '#64748B',
+                        borderColor: '#E2E8F0',
+                        borderWidth: 1,
+                        cornerRadius: 8
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+    </script>
+</body>
+</html>

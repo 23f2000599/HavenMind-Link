@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Trends - HavenMind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-bold text-xl text-slate-900">Wellness Trends</span>
+                        <p class="text-xs text-slate-500">{{ user.university }}</p>
+                    </div>
+                </div>
+                <a href="{{ url_for('institution_dashboard') }}" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-slate-900 mb-2">Wellness Trends Analysis</h2>
+            <p class="text-slate-600">30-day mental health trends across the institution</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-slate-900">Average Wellness</h3>
+                    <div class="p-2 rounded-lg bg-blue-50">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-slate-900 mb-2">
+                    {{ "%.0f"|format(avg_wellness) }}%
+                </div>
+                <p class="text-sm text-slate-500">Last 30 days</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-slate-900">Total Entries</h3>
+                    <div class="p-2 rounded-lg bg-green-50">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-slate-900 mb-2">
+                    {{ total_entries }}
+                </div>
+                <p class="text-sm text-slate-500">Journal entries</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-slate-900">Trend Direction</h3>
+                    <div class="p-2 rounded-lg {% if trend_direction == 'up' %}bg-green-50{% elif trend_direction == 'down' %}bg-red-50{% else %}bg-yellow-50{% endif %}">
+                        <svg class="w-5 h-5 {% if trend_direction == 'up' %}text-green-600{% elif trend_direction == 'down' %}text-red-600{% else %}text-yellow-600{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {% if trend_direction == 'up' %}
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            {% elif trend_direction == 'down' %}
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
+                            {% else %}
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8"></path>
+                            {% endif %}
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-2xl font-bold {% if trend_direction == 'up' %}text-green-600{% elif trend_direction == 'down' %}text-red-600{% else %}text-yellow-600{% endif %} mb-2">
+                    {% if trend_direction == 'up' %}Improving{% elif trend_direction == 'down' %}Declining{% else %}Stable{% endif %}
+                </div>
+                <p class="text-sm text-slate-500">Overall trend</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <h3 class="text-xl font-semibold text-slate-900 mb-6">Wellness Timeline (30 Days)</h3>
+                <canvas id="timelineChart" width="400" height="300"></canvas>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <h3 class="text-xl font-semibold text-slate-900 mb-6">Mood Distribution</h3>
+                <canvas id="distributionChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const timelineData = {{ wellness_timeline | tojson }};
+        const distributionData = {{ mood_distribution | tojson }};
+        
+        // Timeline Chart
+        const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+        new Chart(timelineCtx, {
+            type: 'line',
+            data: {
+                labels: timelineData.map(d => new Date(d.date).toLocaleDateString()),
+                datasets: [{
+                    label: 'Wellness Score',
+                    data: timelineData.map(d => d.mood * 100),
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100 },
+                    x: { display: false }
+                }
+            }
+        });
+
+        // Distribution Chart
+        const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+        new Chart(distributionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: distributionData.map(d => d.category),
+                datasets: [{
+                    data: distributionData.map(d => d.count),
+                    backgroundColor: ['#EF4444', '#F59E0B', '#10B981'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

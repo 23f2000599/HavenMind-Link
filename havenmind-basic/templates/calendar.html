@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Calendar - HavenMind Link</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+        .time-slot { min-height: 60px; }
+        .event-block { position: relative; z-index: 10; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-xl text-slate-900">HavenMind Calendar</span>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="/student-dashboard" class="text-slate-600 hover:text-slate-900 transition-colors">Dashboard</a>
+                    <a href="/calendar" class="text-indigo-600 font-medium">Calendar</a>
+                    <a href="/journal" class="text-slate-600 hover:text-slate-900 transition-colors">Journal</a>
+                    <a href="/support" class="text-slate-600 hover:text-slate-900 transition-colors">Support</a>
+                    <a href="/profile" class="text-slate-600 hover:text-slate-900 transition-colors">Profile</a>
+                    <a href="/logout" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition-colors">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-4xl font-bold text-slate-900 mb-2">Smart Calendar</h1>
+                <p class="text-lg text-slate-600">AI-powered schedule optimization for better mental wellness</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="showAddEventModal()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition-colors font-medium flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Add Event
+                </button>
+                <button onclick="toggleView()" id="viewToggle" class="bg-slate-200 text-slate-700 px-4 py-3 rounded-xl hover:bg-slate-300 transition-colors font-medium">
+                    Week View
+                </button>
+                <button onclick="generateTimetable()" class="bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 transition-colors font-medium">
+                    Generate Timetable
+                </button>
+            </div>
+        </div>
+
+        <!-- Cognitive Load Dashboard -->
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-3xl border border-blue-200">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full">Weekly Load</span>
+                </div>
+                <h3 class="font-semibold text-blue-900 mb-1">Cognitive Load</h3>
+                <div class="text-3xl font-bold text-blue-700 mb-2">{{ "%.0f"|format(weekly_load * 100) }}%</div>
+                <div class="w-full bg-blue-200 rounded-full h-2">
+                    <div class="bg-blue-500 h-2 rounded-full" style="width: {{ weekly_load * 100 }}%"></div>
+                </div>
+                <p class="text-sm text-blue-600 mt-2">
+                    {% if weekly_load > 0.7 %}High stress week{% elif weekly_load > 0.4 %}Moderate load{% else %}Balanced schedule{% endif %}
+                </p>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-3xl border border-green-200">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full">This Week</span>
+                </div>
+                <h3 class="font-semibold text-green-900 mb-1">Total Events</h3>
+                <div class="text-3xl font-bold text-green-700 mb-2">{{ events|length }}</div>
+                <div class="flex gap-1 mt-2">
+                    {% set high_count = events|selectattr('stress_level', 'equalto', 'high')|list|length %}
+                    {% set medium_count = events|selectattr('stress_level', 'equalto', 'medium')|list|length %}
+                    {% set low_count = events|selectattr('stress_level', 'equalto', 'low')|list|length %}
+                    <div class="w-2 h-2 bg-red-500 rounded-full" title="{{ high_count }} high stress"></div>
+                    <div class="w-2 h-2 bg-yellow-500 rounded-full" title="{{ medium_count }} medium stress"></div>
+                    <div class="w-2 h-2 bg-green-500 rounded-full" title="{{ low_count }} low stress"></div>
+                </div>
+                <p class="text-sm text-green-600 mt-2">{{ high_count }} high, {{ medium_count }} medium, {{ low_count }} low stress</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-3xl border border-purple-200">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-purple-500 rounded-2xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded-full">AI Insights</span>
+                </div>
+                <h3 class="font-semibold text-purple-900 mb-1">Wellness Score</h3>
+                <div class="text-3xl font-bold text-purple-700 mb-2">{{ "%.0f"|format((1 - weekly_load) * 100) }}</div>
+                <div class="w-full bg-purple-200 rounded-full h-2">
+                    <div class="bg-purple-500 h-2 rounded-full" style="width: {{ (1 - weekly_load) * 100 }}%"></div>
+                </div>
+                <p class="text-sm text-purple-600 mt-2">Schedule optimization</p>
+            </div>
+        </div>
+
+        <!-- AI Recommendations -->
+        {% if wellness_suggestions %}
+        <div class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200 mb-8">
+            <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                AI Wellness Recommendations
+            </h3>
+            <div class="grid md:grid-cols-2 gap-4">
+                {% for suggestion in wellness_suggestions %}
+                <div class="bg-indigo-50 p-4 rounded-2xl border-l-4 border-indigo-500">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-semibold text-indigo-900 mb-1">{{ suggestion.activity }}</h4>
+                            <p class="text-sm text-indigo-700 mb-1">{{ suggestion.time }}</p>
+                            <p class="text-xs text-indigo-600">{{ suggestion.reason }}</p>
+                        </div>
+                        <form method="POST" action="/calendar/wellness" class="inline">
+                            <input type="hidden" name="activity" value="{{ suggestion.activity }}">
+                            <input type="hidden" name="break_time" value="{{ suggestion.time }}">
+                            <button type="submit" class="bg-indigo-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-indigo-700 transition-colors">
+                                Schedule
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Calendar Views -->
+        <div class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+            <!-- Calendar Header -->
+            <div class="bg-slate-50 p-6 border-b border-slate-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <button onclick="previousPeriod()" class="p-2 hover:bg-slate-200 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <h2 id="calendarTitle" class="text-2xl font-bold text-slate-900"></h2>
+                        <button onclick="nextPeriod()" class="p-2 hover:bg-slate-200 rounded-lg transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <button onclick="goToToday()" class="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg hover:bg-indigo-200 transition-colors font-medium">
+                        Today
+                    </button>
+                </div>
+            </div>
+
+            <!-- Month View -->
+            <div id="monthView" class="p-6">
+                <div class="calendar-grid gap-1 mb-4">
+                    <div class="text-center font-semibold text-slate-600 py-2">Sun</div>
+                    <div class="text-center font-semibold text-slate-600 py-2">Mon</div>
+                    <div class="text-center font-semibold text-slate-600 py-2">Tue</div>
+                    <div class="text-center font-semibold text-slate-600 py-2">Wed</div>
+                    <div class="text-center font-semibold text-slate-600 py-2">Thu</div>
+                    <div class="text-center font-semibold text-slate-600 py-2">Fri</div>
+                    <div class="text-center font-semibold text-slate-600 py-2">Sat</div>
+                </div>
+                <div id="monthGrid" class="calendar-grid gap-1"></div>
+            </div>
+
+            <!-- Week View -->
+            <div id="weekView" class="hidden">
+                <div class="grid grid-cols-8 border-b border-slate-200">
+                    <div class="p-4 text-center font-semibold text-slate-600">Time</div>
+                    <div class="p-4 text-center font-semibold text-slate-600">Sun</div>
+                    <div class="p-4 text-center font-semibold text-slate-600">Mon</div>
+                    <div class="p-4 text-center font-semibold text-slate-600">Tue</div>
+                    <div class="p-4 text-center font-semibold text-slate-600">Wed</div>
+                    <div class="p-4 text-center font-semibold text-slate-600">Thu</div>
+                    <div class="p-4 text-center font-semibold text-slate-600">Fri</div>
+                    <div class="p-4 text-center font-semibold text-slate-600">Sat</div>
+                </div>
+                <div id="weekGrid" class="max-h-96 overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <!-- Events List -->
+        <div class="mt-8 bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <h3 class="text-xl font-bold text-slate-900 mb-6">Upcoming Events</h3>
+            {% if events %}
+            <div class="space-y-4">
+                {% for event in events %}
+                <div class="p-4 rounded-2xl border-l-4 {% if event.completed %}bg-gray-100 border-gray-400 opacity-75{% elif event.stress_level == 'critical' %}bg-gray-50 border-black{% elif event.stress_level == 'high' %}bg-red-50 border-red-500{% elif event.stress_level == 'medium' %}bg-orange-50 border-orange-500{% elif event.stress_level == 'low' %}bg-yellow-50 border-yellow-500{% else %}bg-green-50 border-green-500{% endif %} hover:shadow-md transition-all">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h4 class="font-semibold text-lg text-slate-900 {% if event.completed %}line-through text-gray-600{% endif %}">{{ event.title }}</h4>
+                                <span class="px-3 py-1 rounded-full text-xs font-medium {% if event.stress_level == 'critical' %}bg-black text-white{% elif event.stress_level == 'high' %}bg-red-200 text-red-800{% elif event.stress_level == 'medium' %}bg-orange-200 text-orange-800{% elif event.stress_level == 'low' %}bg-yellow-200 text-yellow-800{% else %}bg-green-200 text-green-800{% endif %}">
+                                    {% if event.stress_level == 'critical' %}⚫{% elif event.stress_level == 'high' %}🔴{% elif event.stress_level == 'medium' %}🟠{% elif event.stress_level == 'low' %}🟡{% else %}🟢{% endif %} {{ event.stress_level }}
+                                </span>
+                            </div>
+                            <p class="text-sm text-slate-600 mb-1">{{ event.event_date }}</p>
+                            {% if event.description %}
+                            <p class="text-sm text-slate-700">{{ event.description }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="flex gap-2">
+                            <form method="POST" action="/calendar/complete/{{ event.id }}" class="inline">
+                                <button type="submit" class="{% if event.completed %}bg-green-600 text-white{% else %}bg-gray-200 text-gray-700{% endif %} px-3 py-1 rounded-lg text-sm font-medium hover:opacity-80 transition-colors">
+                                    {% if event.completed %}✓ Completed{% else %}Mark Complete{% endif %}
+                                </button>
+                            </form>
+                            <button onclick="editEvent({{ event.id }}, '{{ event.title }}', '{{ event.event_date }}', '{{ event.description|e }}', '{{ event.stress_level }}')" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                                Edit
+                            </button>
+                            <form method="POST" action="/calendar/delete/{{ event.id }}" class="inline">
+                                <button type="submit" onclick="return confirm('Delete this event?')" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <p class="text-slate-500 mb-4">No events scheduled yet</p>
+                <button onclick="showAddEventModal()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition-colors font-medium">
+                    Add Your First Event
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div id="addEventModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-3xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-slate-900">Add New Event</h3>
+                <button onclick="closeAddEventModal()" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Manual Input -->
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                        Manual Entry
+                    </h4>
+                    <form method="POST" class="space-y-4">
+                        <input type="text" name="title" placeholder="Event title" class="w-full p-3 border border-slate-300 rounded-xl focus:border-indigo-500 focus:outline-none" required>
+                        <input type="datetime-local" name="event_date" class="w-full p-3 border border-slate-300 rounded-xl focus:border-indigo-500 focus:outline-none" required>
+                        <textarea name="description" rows="3" class="w-full p-3 border border-slate-300 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="Description (optional)"></textarea>
+                        <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition-colors font-medium">
+                            Add Event
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- AI Smart Input -->
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        AI Smart Input
+                    </h4>
+                    <div class="space-y-4">
+                        <textarea id="smartInput" rows="4" class="w-full p-3 border border-slate-300 rounded-xl focus:border-green-500 focus:outline-none" placeholder="Describe your event naturally:
+
+'Math exam tomorrow at 2 PM'
+'Study group meeting next Friday'
+'Project deadline in 3 days'"></textarea>
+                        <div class="flex gap-2">
+                            <button onclick="startVoiceInput()" id="voiceBtn" class="flex-1 bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition-colors font-medium flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                                </svg>
+                                Voice Input
+                            </button>
+                            <button onclick="processSmartInput()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition-colors font-medium">
+                                Process with AI
+                            </button>
+                        </div>
+                        <div id="aiPreview" class="hidden bg-blue-50 p-4 rounded-xl border border-blue-200">
+                            <h5 class="font-semibold text-blue-900 mb-2">AI Processed Event:</h5>
+                            <div id="aiPreviewContent"></div>
+                            <button onclick="confirmAIEvent()" class="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                                Confirm & Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Timetable Modal -->
+    <div id="timetableModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-3xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-slate-900">AI Generated Study Timetable</h3>
+                <button onclick="closeTimetableModal()" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="timetableContent" class="space-y-6">
+                <!-- Timetable will be generated here -->
+            </div>
+            
+            <div class="mt-6 flex gap-3">
+                <button onclick="applyTimetable()" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition-colors font-medium">
+                    Apply to Calendar
+                </button>
+                <button onclick="closeTimetableModal()" class="flex-1 bg-slate-200 text-slate-700 py-3 rounded-xl hover:bg-slate-300 transition-colors font-medium">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Event Modal -->
+    <div id="editEventModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-3xl max-w-lg w-full mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-slate-900">Edit Event</h3>
+                <button onclick="closeEditEventModal()" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="editEventForm" method="POST" class="space-y-4">
+                <input type="text" id="editTitle" name="title" placeholder="Event title" class="w-full p-3 border border-slate-300 rounded-xl focus:border-indigo-500 focus:outline-none" required>
+                <input type="datetime-local" id="editDate" name="event_date" class="w-full p-3 border border-slate-300 rounded-xl focus:border-indigo-500 focus:outline-none" required>
+                <textarea id="editDescription" name="description" rows="3" class="w-full p-3 border border-slate-300 rounded-xl focus:border-indigo-500 focus:outline-none" placeholder="Description (optional)"></textarea>
+                <select id="editStressLevel" name="stress_level" class="w-full p-3 border border-slate-300 rounded-xl focus:border-indigo-500 focus:outline-none">
+                    <option value="minimal">🟢 Minimal Stress</option>
+                    <option value="low">🟡 Low Stress</option>
+                    <option value="medium">🟠 Medium Stress</option>
+                    <option value="high">🔴 High Stress</option>
+                    <option value="critical">⚫ Critical Stress</option>
+                </select>
+                <div class="flex gap-3">
+                    <button type="submit" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition-colors font-medium">
+                        Update Event
+                    </button>
+                    <button type="button" onclick="closeEditEventModal()" class="flex-1 bg-slate-200 text-slate-700 py-3 rounded-xl hover:bg-slate-300 transition-colors font-medium">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentDate = new Date();
+        let currentView = 'month';
+        let events = {{ events|tojson }};
+        let recognition;
+        let aiProcessedEvent = null;
+
+        // Initialize calendar
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCalendar();
+        });
+
+        function updateCalendar() {
+            if (currentView === 'month') {
+                updateMonthView();
+            } else {
+                updateWeekView();
+            }
+        }
+
+        function updateMonthView() {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            document.getElementById('calendarTitle').textContent = 
+                `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+            
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            const monthGrid = document.getElementById('monthGrid');
+            monthGrid.innerHTML = '';
+            
+            for (let i = 0; i < 42; i++) {
+                const cellDate = new Date(startDate);
+                cellDate.setDate(startDate.getDate() + i);
+                
+                const cell = document.createElement('div');
+                cell.className = `min-h-24 p-2 border border-slate-200 hover:bg-slate-50 cursor-pointer ${
+                    cellDate.getMonth() !== currentDate.getMonth() ? 'text-slate-400 bg-slate-50' : ''
+                } ${
+                    cellDate.toDateString() === new Date().toDateString() ? 'bg-indigo-50 border-indigo-300' : ''
+                }`;
+                
+                cell.innerHTML = `
+                    <div class="font-semibold mb-1">${cellDate.getDate()}</div>
+                    <div class="space-y-1">${getEventsForDate(cellDate)}</div>
+                `;
+                
+                cell.onclick = () => selectDate(cellDate);
+                monthGrid.appendChild(cell);
+            }
+        }
+
+        function updateWeekView() {
+            const weekStart = new Date(currentDate);
+            weekStart.setDate(currentDate.getDate() - currentDate.getDay());
+            
+            document.getElementById('calendarTitle').textContent = 
+                `Week of ${weekStart.toLocaleDateString()}`;
+            
+            const weekGrid = document.getElementById('weekGrid');
+            weekGrid.innerHTML = '';
+            
+            for (let hour = 6; hour < 24; hour++) {
+                const row = document.createElement('div');
+                row.className = 'grid grid-cols-8 border-b border-slate-100';
+                
+                const timeCell = document.createElement('div');
+                timeCell.className = 'p-3 text-sm text-slate-600 border-r border-slate-200';
+                timeCell.textContent = `${hour}:00`;
+                row.appendChild(timeCell);
+                
+                for (let day = 0; day < 7; day++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.className = 'time-slot p-2 border-r border-slate-100 hover:bg-slate-50';
+                    
+                    const cellDate = new Date(weekStart);
+                    cellDate.setDate(weekStart.getDate() + day);
+                    cellDate.setHours(hour, 0, 0, 0);
+                    
+                    dayCell.innerHTML = getEventsForHour(cellDate);
+                    row.appendChild(dayCell);
+                }
+                
+                weekGrid.appendChild(row);
+            }
+        }
+
+        function getEventsForDate(date) {
+            const dateStr = date.toDateString();
+            const dayEvents = events.filter(event => {
+                const eventDate = new Date(event.event_date);
+                return eventDate.toDateString() === dateStr;
+            });
+            
+            return dayEvents.map(event => {
+                const stressColor = event.completed ? 'bg-gray-400' : 
+                                  event.stress_level === 'high' ? 'bg-red-500' : 
+                                  event.stress_level === 'medium' ? 'bg-yellow-500' : 'bg-green-500';
+                const textStyle = event.completed ? 'line-through opacity-75' : '';
+                return `<div class="text-xs p-1 ${stressColor} text-white rounded truncate ${textStyle}" title="${event.title}">${event.title}</div>`;
+            }).join('');
+        }
+
+        function getEventsForHour(date) {
+            const events_at_hour = events.filter(event => {
+                const eventDate = new Date(event.event_date);
+                return eventDate.getTime() >= date.getTime() && 
+                       eventDate.getTime() < date.getTime() + 3600000;
+            });
+            
+            return events_at_hour.map(event => {
+                const stressColor = event.completed ? 'bg-gray-400' : 
+                                  event.stress_level === 'high' ? 'bg-red-500' : 
+                                  event.stress_level === 'medium' ? 'bg-yellow-500' : 'bg-green-500';
+                const textStyle = event.completed ? 'line-through opacity-75' : '';
+                return `<div class="event-block text-xs p-1 ${stressColor} text-white rounded mb-1 ${textStyle}">${event.title}</div>`;
+            }).join('');
+        }
+
+        function toggleView() {
+            currentView = currentView === 'month' ? 'week' : 'month';
+            document.getElementById('viewToggle').textContent = currentView === 'month' ? 'Week View' : 'Month View';
+            
+            if (currentView === 'month') {
+                document.getElementById('monthView').classList.remove('hidden');
+                document.getElementById('weekView').classList.add('hidden');
+            } else {
+                document.getElementById('monthView').classList.add('hidden');
+                document.getElementById('weekView').classList.remove('hidden');
+            }
+            
+            updateCalendar();
+        }
+
+        function previousPeriod() {
+            if (currentView === 'month') {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+            } else {
+                currentDate.setDate(currentDate.getDate() - 7);
+            }
+            updateCalendar();
+        }
+
+        function nextPeriod() {
+            if (currentView === 'month') {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+            } else {
+                currentDate.setDate(currentDate.getDate() + 7);
+            }
+            updateCalendar();
+        }
+
+        function goToToday() {
+            currentDate = new Date();
+            updateCalendar();
+        }
+
+        function selectDate(date) {
+            showAddEventModal();
+            const dateInput = document.querySelector('input[name="event_date"]');
+            if (dateInput) {
+                const isoString = date.toISOString().slice(0, 16);
+                dateInput.value = isoString;
+            }
+        }
+
+        function showAddEventModal() {
+            document.getElementById('addEventModal').classList.remove('hidden');
+            document.getElementById('addEventModal').classList.add('flex');
+        }
+
+        function closeAddEventModal() {
+            document.getElementById('addEventModal').classList.add('hidden');
+            document.getElementById('addEventModal').classList.remove('flex');
+        }
+
+        function startVoiceInput() {
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                const voiceBtn = document.getElementById('voiceBtn');
+                voiceBtn.innerHTML = '<svg class="w-5 h-5 animate-pulse" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg> Listening...';
+                voiceBtn.disabled = true;
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('smartInput').value = transcript;
+                };
+                
+                recognition.onend = function() {
+                    voiceBtn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg> Voice Input';
+                    voiceBtn.disabled = false;
+                };
+                
+                recognition.start();
+            } else {
+                alert('Voice recognition not supported in this browser.');
+            }
+        }
+
+        function processSmartInput() {
+            const input = document.getElementById('smartInput').value.trim();
+            if (!input) {
+                alert('Please enter some text to process.');
+                return;
+            }
+            
+            // Simple AI processing simulation
+            const processed = parseNaturalLanguage(input);
+            aiProcessedEvent = processed;
+            
+            const preview = document.getElementById('aiPreview');
+            const content = document.getElementById('aiPreviewContent');
+            
+            content.innerHTML = `
+                <div class="space-y-2">
+                    <div><strong>Title:</strong> ${processed.title}</div>
+                    <div><strong>Date:</strong> ${processed.date}</div>
+                    <div><strong>Stress Level:</strong> <span class="px-2 py-1 rounded text-xs ${
+                        processed.stress === 'high' ? 'bg-red-200 text-red-800' :
+                        processed.stress === 'medium' ? 'bg-yellow-200 text-yellow-800' :
+                        'bg-green-200 text-green-800'
+                    }">${processed.stress}</span></div>
+                    ${processed.description ? `<div><strong>Description:</strong> ${processed.description}</div>` : ''}
+                </div>
+            `;
+            
+            preview.classList.remove('hidden');
+        }
+
+        function parseNaturalLanguage(input) {
+            const lowInput = input.toLowerCase();
+            
+            // Extract title
+            let title = input;
+            const titleMatch = lowInput.match(/(exam|test|meeting|assignment|project|study|class|lecture|presentation|interview|deadline)/);
+            if (titleMatch) {
+                title = titleMatch[1].charAt(0).toUpperCase() + titleMatch[1].slice(1);
+                const subjectMatch = input.match(/(math|english|science|history|physics|chemistry|biology|computer|programming)\s+(exam|test|class)/i);
+                if (subjectMatch) {
+                    title = subjectMatch[0];
+                }
+            }
+            
+            // Extract date
+            let date = new Date();
+            if (lowInput.includes('tomorrow')) {
+                date.setDate(date.getDate() + 1);
+            } else if (lowInput.includes('next week')) {
+                date.setDate(date.getDate() + 7);
+            } else if (lowInput.includes('monday')) {
+                date = getNextWeekday(1);
+            } else if (lowInput.includes('tuesday')) {
+                date = getNextWeekday(2);
+            } else if (lowInput.includes('wednesday')) {
+                date = getNextWeekday(3);
+            } else if (lowInput.includes('thursday')) {
+                date = getNextWeekday(4);
+            } else if (lowInput.includes('friday')) {
+                date = getNextWeekday(5);
+            }
+            
+            // Extract time
+            const timeMatch = lowInput.match(/(\d{1,2})\s*(am|pm|:\d{2})/i);
+            if (timeMatch) {
+                let hour = parseInt(timeMatch[1]);
+                if (timeMatch[2].toLowerCase().includes('pm') && hour !== 12) hour += 12;
+                if (timeMatch[2].toLowerCase().includes('am') && hour === 12) hour = 0;
+                date.setHours(hour, 0, 0, 0);
+            } else {
+                date.setHours(9, 0, 0, 0); // Default to 9 AM
+            }
+            
+            // Determine base stress level
+            let baseStress = 'medium';
+            if (lowInput.includes('exam') || lowInput.includes('test') || lowInput.includes('deadline') || lowInput.includes('presentation')) {
+                baseStress = 'high';
+            } else if (lowInput.includes('break') || lowInput.includes('lunch') || lowInput.includes('social') || lowInput.includes('wellness')) {
+                baseStress = 'low';
+            }
+            
+            // Time proximity adjustment
+            const now = new Date();
+            const hoursUntil = (date - now) / (1000 * 60 * 60);
+            const daysUntil = Math.floor(hoursUntil / 24);
+            
+            let stress = baseStress;
+            if (hoursUntil <= 24) {
+                // Within 24 hours - escalate stress
+                if (baseStress === 'low') stress = 'medium';
+                else if (baseStress === 'medium') stress = 'high';
+                else stress = 'high';
+            } else if (daysUntil <= 3) {
+                // Within 3 days
+                if (baseStress === 'medium') stress = 'high';
+                else if (baseStress === 'high') stress = 'high';
+            } else if (daysUntil <= 7) {
+                // Within a week
+                if (baseStress === 'high') stress = 'high';
+            }
+            
+            return {
+                title: title,
+                date: date.toISOString().slice(0, 16),
+                stress: stress,
+                description: `Processed from: "${input}"`
+            };
+        }
+
+        function getNextWeekday(targetDay) {
+            const date = new Date();
+            const currentDay = date.getDay();
+            const daysUntilTarget = (targetDay - currentDay + 7) % 7;
+            date.setDate(date.getDate() + (daysUntilTarget === 0 ? 7 : daysUntilTarget));
+            return date;
+        }
+
+        function confirmAIEvent() {
+            if (!aiProcessedEvent) return;
+            
+            fetch('/calendar/ai-event', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    title: aiProcessedEvent.title,
+                    event_date: aiProcessedEvent.date,
+                    description: aiProcessedEvent.description,
+                    stress_level: aiProcessedEvent.stress
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Event added successfully!');
+                    location.reload();
+                } else {
+                    alert('Error adding event: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding event. Please try again.');
+            });
+        }
+        
+        function editEvent(eventId, title, date, description, stressLevel) {
+            document.getElementById('editTitle').value = title;
+            document.getElementById('editDate').value = date.replace(' ', 'T').slice(0, 16);
+            document.getElementById('editDescription').value = description || '';
+            document.getElementById('editStressLevel').value = stressLevel;
+            
+            const form = document.getElementById('editEventForm');
+            form.action = `/calendar/edit/${eventId}`;
+            
+            document.getElementById('editEventModal').classList.remove('hidden');
+            document.getElementById('editEventModal').classList.add('flex');
+        }
+        
+        function closeEditEventModal() {
+            document.getElementById('editEventModal').classList.add('hidden');
+            document.getElementById('editEventModal').classList.remove('flex');
+        }
+        
+        function generateTimetable() {
+            fetch('/calendar/generate-timetable', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayTimetable(data.timetable);
+                    document.getElementById('timetableModal').classList.remove('hidden');
+                    document.getElementById('timetableModal').classList.add('flex');
+                } else {
+                    alert('Error generating timetable: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error generating timetable. Please try again.');
+            });
+        }
+        
+        function displayTimetable(timetable) {
+            const content = document.getElementById('timetableContent');
+            let html = '';
+            
+            // Overview
+            html += `
+                <div class="bg-indigo-50 p-6 rounded-2xl border border-indigo-200">
+                    <h4 class="text-lg font-semibold text-indigo-900 mb-3">📚 Study Plan Overview</h4>
+                    <div class="grid md:grid-cols-3 gap-4 text-sm">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-indigo-600">${timetable.total_sessions}</div>
+                            <div class="text-indigo-700">Study Sessions</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-indigo-600">${timetable.total_hours}h</div>
+                            <div class="text-indigo-700">Total Study Time</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-indigo-600">${timetable.subjects.length}</div>
+                            <div class="text-indigo-700">Subjects</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Daily Schedule
+            timetable.daily_schedule.forEach(day => {
+                html += `
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                        <h4 class="text-lg font-semibold text-slate-900 mb-4">${day.date} - ${day.day_name}</h4>
+                        <div class="space-y-3">
+                `;
+                
+                day.sessions.forEach(session => {
+                    const stressColor = session.stress_level === 'high' ? 'bg-red-100 border-red-300 text-red-800' :
+                                      session.stress_level === 'medium' ? 'bg-orange-100 border-orange-300 text-orange-800' :
+                                      'bg-green-100 border-green-300 text-green-800';
+                    
+                    html += `
+                        <div class="${stressColor} p-4 rounded-xl border">
+                            <div class="flex justify-between items-start mb-2">
+                                <h5 class="font-semibold">${session.title}</h5>
+                                <span class="text-sm font-medium">${session.time}</span>
+                            </div>
+                            <p class="text-sm mb-2">${session.description}</p>
+                            <div class="flex justify-between items-center text-xs">
+                                <span>Duration: ${session.duration}</span>
+                                <span>Priority: ${session.priority}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            });
+            
+            content.innerHTML = html;
+        }
+        
+        function closeTimetableModal() {
+            document.getElementById('timetableModal').classList.add('hidden');
+            document.getElementById('timetableModal').classList.remove('flex');
+        }
+        
+        function applyTimetable() {
+            fetch('/calendar/apply-timetable', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Timetable applied successfully!');
+                    location.reload();
+                } else {
+                    alert('Error applying timetable: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error applying timetable. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>

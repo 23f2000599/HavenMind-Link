@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-3xl font-bold mb-8">NGO/Watchdog Oversight Dashboard</h1>
+
+<div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="font-semibold text-lg mb-2">Institutions Monitored</h3>
+        <div class="text-3xl font-bold text-blue-600">47</div>
+        <p class="text-sm text-gray-600">Universities & colleges</p>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="font-semibold text-lg mb-2">Compliance Issues</h3>
+        <div class="text-3xl font-bold text-red-600">8</div>
+        <p class="text-sm text-gray-600">Requiring investigation</p>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="font-semibold text-lg mb-2">Data Integrity</h3>
+        <div class="text-3xl font-bold text-green-600">98.7%</div>
+        <p class="text-sm text-gray-600">Verification rate</p>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="font-semibold text-lg mb-2">Reports Generated</h3>
+        <div class="text-3xl font-bold text-purple-600">23</div>
+        <p class="text-sm text-gray-600">This quarter</p>
+    </div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-6">
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="font-semibold text-lg mb-4">Institutional Accountability</h3>
+        <div class="space-y-3">
+            <div class="p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+                <p class="font-medium text-red-800">University X - Critical</p>
+                <p class="text-sm text-gray-600">40% increase in student crisis reports, inadequate response</p>
+                <button class="mt-2 bg-red-600 text-white px-3 py-1 rounded text-sm">Investigate</button>
+            </div>
+            <div class="p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                <p class="font-medium text-yellow-800">College Y - Monitoring</p>
+                <p class="text-sm text-gray-600">Delayed implementation of recommended policies</p>
+                <button class="mt-2 bg-yellow-600 text-white px-3 py-1 rounded text-sm">Follow Up</button>
+            </div>
+            <div class="p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
+                <p class="font-medium text-green-800">Institute Z - Compliant</p>
+                <p class="text-sm text-gray-600">Excellent student wellness programs implemented</p>
+                <button class="mt-2 bg-green-600 text-white px-3 py-1 rounded text-sm">Commend</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h3 class="font-semibold text-lg mb-4">Transparency Tools</h3>
+        <div class="space-y-3">
+            <a href="#" class="block bg-blue-50 hover:bg-blue-100 p-3 rounded-lg">📊 Generate Public Report</a>
+            <a href="#" class="block bg-green-50 hover:bg-green-100 p-3 rounded-lg">🔍 Data Verification Portal</a>
+            <a href="#" class="block bg-purple-50 hover:bg-purple-100 p-3 rounded-lg">📋 Anonymous Tip System</a>
+            <a href="#" class="block bg-orange-50 hover:bg-orange-100 p-3 rounded-lg">⚖️ Ethics Review Board</a>
+        </div>
+    </div>
+</div>
+
+<div class="mt-8 bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-lg">
+    <h3 class="font-semibold text-lg mb-4 text-indigo-800">🛡️ Watchdog Mission Statement</h3>
+    <p class="text-indigo-700">
+        Ensuring institutional accountability and transparency in student mental health support. 
+        We verify data integrity, investigate compliance issues, and advocate for systemic improvements 
+        to protect student wellbeing across educational institutions.
+    </p>
+</div>
+{% endblock %}

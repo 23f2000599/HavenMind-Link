@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - HavenMind Link</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .glow {
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 overflow-x-hidden">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <img src="/static/logo.PNG" alt="HavenMind Logo" class="h-8 w-8">
+                    <span class="font-bold text-xl text-slate-900">HavenMind Link</span>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="/student-dashboard" class="text-indigo-600 font-medium">Dashboard</a>
+                    <a href="/calendar" class="text-slate-600 hover:text-slate-900 transition-colors">Calendar</a>
+                    <a href="/journal" class="text-slate-600 hover:text-slate-900 transition-colors">Journal</a>
+                    <a href="/support" class="text-slate-600 hover:text-slate-900 transition-colors">Support</a>
+                    <a href="/profile" class="text-slate-600 hover:text-slate-900 transition-colors">Profile</a>
+                    <a href="/logout" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition-colors">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="mb-12">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold text-slate-900 mb-2">
+                        Welcome back, <span class="text-gradient">{{ user.username }}</span>
+                    </h1>
+                    <p class="text-lg text-slate-600">Your wellness journey continues today</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-slate-500">Today's Date</div>
+                    <div class="text-lg font-semibold text-slate-900" id="currentDate"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wellness Overview -->
+        <div class="grid md:grid-cols-4 gap-6 mb-12">
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-3xl border border-blue-200 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full">Good</span>
+                </div>
+                <h3 class="font-semibold text-blue-900 mb-1">Cognitive Load</h3>
+                <div class="text-3xl font-bold text-blue-700 mb-2">72%</div>
+                <div class="w-full bg-blue-200 rounded-full h-2">
+                    <div class="bg-blue-500 h-2 rounded-full" style="width: 72%"></div>
+                </div>
+                <p class="text-sm text-blue-600 mt-2">Moderate stress level</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-3xl border border-green-200 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full">↗️ Rising</span>
+                </div>
+                <h3 class="font-semibold text-green-900 mb-1">Mood Trend</h3>
+                <div class="text-3xl font-bold text-green-700 mb-2">8.2</div>
+                <div class="w-full bg-green-200 rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full" style="width: 82%"></div>
+                </div>
+                <p class="text-sm text-green-600 mt-2">Improving this week</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-3xl border border-purple-200 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-purple-500 rounded-2xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs bg-purple-200 text-purple-800 px-2 py-1 rounded-full">Active</span>
+                </div>
+                <h3 class="font-semibold text-purple-900 mb-1">Support Network</h3>
+                <div class="text-3xl font-bold text-purple-700 mb-2">5</div>
+                <div class="flex gap-1 mt-2">
+                    <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <div class="w-2 h-2 bg-purple-300 rounded-full"></div>
+                    <div class="w-2 h-2 bg-purple-300 rounded-full"></div>
+                </div>
+                <p class="text-sm text-purple-600 mt-2">Peer connections</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-3xl border border-orange-200 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded-full">23 Days</span>
+                </div>
+                <h3 class="font-semibold text-orange-900 mb-1">Wellness Streak</h3>
+                <div class="text-3xl font-bold text-orange-700 mb-2">🔥</div>
+                <div class="w-full bg-orange-200 rounded-full h-2">
+                    <div class="bg-orange-500 h-2 rounded-full" style="width: 77%"></div>
+                </div>
+                <p class="text-sm text-orange-600 mt-2">Daily check-ins</p>
+            </div>
+        </div>
+
+        <!-- AI Insights & Recommendations -->
+        <div class="grid lg:grid-cols-3 gap-8 mb-12">
+            <!-- AI Wellness Coach -->
+            <div class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900">AI Wellness Coach</h3>
+                        <p class="text-slate-600">Personalized insights based on your data</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-2xl border-l-4 border-blue-500">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-blue-900 mb-1">Stress Management Tip</h4>
+                                <p class="text-blue-800 text-sm">Your cognitive load is moderate today. Consider taking a 10-minute break every 2 hours to maintain optimal performance.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-2xl border-l-4 border-green-500">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-green-900 mb-1">Mood Boost</h4>
+                                <p class="text-green-800 text-sm">Great job maintaining positive momentum! Your mood trend shows consistent improvement over the past week.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-purple-50 p-4 rounded-2xl border-l-4 border-purple-500">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-purple-900 mb-1">Social Connection</h4>
+                                <p class="text-purple-800 text-sm">You have 2 peer supporters available right now. Consider reaching out if you need someone to talk to.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+                <h3 class="text-xl font-bold text-slate-900 mb-6">Quick Actions</h3>
+                <div class="space-y-4">
+                    <a href="/journal" class="block bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 p-4 rounded-2xl transition-all duration-300 group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-blue-900">Journal Entry</h4>
+                                <p class="text-sm text-blue-700">Reflect on your day</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <a href="/calendar" class="block bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 p-4 rounded-2xl transition-all duration-300 group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-green-900">Schedule Event</h4>
+                                <p class="text-sm text-green-700">Plan your activities</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <a href="/chat" class="block bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 p-4 rounded-2xl transition-all duration-300 group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-purple-900">Peer Chat</h4>
+                                <p class="text-sm text-purple-700">Connect with peers</p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <button onclick="startBreathingExercise()" class="w-full bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 p-4 rounded-2xl transition-all duration-300 group">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-orange-900">Breathing Exercise</h4>
+                                <p class="text-sm text-orange-700">5-minute mindfulness</p>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity & Upcoming Events -->
+        <div class="grid lg:grid-cols-2 gap-8 mb-12">
+            <!-- Recent Journal Entries -->
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-slate-900">Recent Reflections</h3>
+                    <a href="/journal" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">View All</a>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-slate-50 p-4 rounded-2xl border-l-4 border-green-500">
+                        <p class="text-sm text-slate-700 mb-2">"Had a great study session today. Feeling more confident about the upcoming exam..."</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-500">2 hours ago</span>
+                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">positive</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-50 p-4 rounded-2xl border-l-4 border-blue-500">
+                        <p class="text-sm text-slate-700 mb-2">"Feeling a bit overwhelmed with assignments, but taking it one step at a time..."</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-500">Yesterday</span>
+                            <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">neutral</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-50 p-4 rounded-2xl border-l-4 border-purple-500">
+                        <p class="text-sm text-slate-700 mb-2">"Connected with my study group today. It's amazing how much better I feel when I'm not alone..."</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-slate-500">2 days ago</span>
+                            <span class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">positive</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <a href="/journal" class="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition-colors font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                        Write New Entry
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Upcoming Events -->
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-slate-900">Upcoming Events</h3>
+                    <a href="/calendar" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">View Calendar</a>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-red-50 p-4 rounded-2xl border-l-4 border-red-500">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-red-900">Final Exam - Mathematics</h4>
+                            <span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">high stress</span>
+                        </div>
+                        <p class="text-sm text-red-700 mb-1">Tomorrow, 9:00 AM</p>
+                        <p class="text-xs text-red-600">⚠️ High impact event</p>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-2xl border-l-4 border-yellow-500">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-yellow-900">Project Presentation</h4>
+                            <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">medium stress</span>
+                        </div>
+                        <p class="text-sm text-yellow-700 mb-1">Friday, 2:00 PM</p>
+                        <p class="text-xs text-yellow-600">Group project submission</p>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-2xl border-l-4 border-green-500">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-semibold text-green-900">Study Group Meeting</h4>
+                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">low stress</span>
+                        </div>
+                        <p class="text-sm text-green-700 mb-1">Saturday, 3:00 PM</p>
+                        <p class="text-xs text-green-600">Peer support session</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <a href="/calendar" class="inline-flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 transition-colors font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Event
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Wellness Tools -->
+        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 p-8 rounded-3xl shadow-lg border border-indigo-200 mb-12">
+            <div class="text-center mb-8">
+                <h3 class="text-2xl font-bold text-slate-900 mb-2">Wellness Toolkit</h3>
+                <p class="text-slate-600">Quick access to mental health resources and exercises</p>
+            </div>
+            
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-2xl text-center hover:shadow-lg transition-all duration-300 cursor-pointer" onclick="startMoodCheck()">
+                    <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-semibold text-slate-900 mb-2">Mood Check-in</h4>
+                    <p class="text-sm text-slate-600">Quick emotional assessment</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-2xl text-center hover:shadow-lg transition-all duration-300 cursor-pointer" onclick="startBreathingExercise()">
+                    <div class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-semibold text-slate-900 mb-2">Breathing Exercise</h4>
+                    <p class="text-sm text-slate-600">5-minute mindfulness</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-2xl text-center hover:shadow-lg transition-all duration-300 cursor-pointer" onclick="showGratitudePrompt()">
+                    <div class="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-semibold text-slate-900 mb-2">Gratitude Practice</h4>
+                    <p class="text-sm text-slate-600">Daily appreciation exercise</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-2xl text-center hover:shadow-lg transition-all duration-300 cursor-pointer" onclick="showCrisisResources()">
+                    <div class="w-16 h-16 bg-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-semibold text-slate-900 mb-2">Crisis Support</h4>
+                    <p class="text-sm text-slate-600">Immediate help resources</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Progress Tracking -->
+        <div class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+            <h3 class="text-xl font-bold text-slate-900 mb-6">Your Wellness Journey</h3>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div class="text-2xl font-bold text-blue-600">23</div>
+                    </div>
+                    <h4 class="font-semibold text-slate-900 mb-1">Day Streak</h4>
+                    <p class="text-sm text-slate-600">Consecutive check-ins</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div class="text-2xl font-bold text-green-600">87%</div>
+                    </div>
+                    <h4 class="font-semibold text-slate-900 mb-1">Weekly Goal</h4>
+                    <p class="text-sm text-slate-600">Wellness activities completed</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div class="text-2xl font-bold text-purple-600">12</div>
+                    </div>
+                    <h4 class="font-semibold text-slate-900 mb-1">Journal Entries</h4>
+                    <p class="text-sm text-slate-600">This month</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Breathing Exercise Modal -->
+    <div id="breathingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-3xl max-w-md mx-4">
+            <div class="text-center">
+                <div class="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">Breathing Exercise</h3>
+                <div id="breathingInstructions" class="text-lg text-slate-700 mb-6">Get ready to begin...</div>
+                <div id="breathingCircle" class="w-32 h-32 bg-blue-100 rounded-full mx-auto mb-6 flex items-center justify-center transition-all duration-4000">
+                    <div class="w-16 h-16 bg-blue-500 rounded-full"></div>
+                </div>
+                <button onclick="closeBreathingExercise()" class="bg-slate-200 text-slate-700 px-6 py-2 rounded-lg hover:bg-slate-300 transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Set current date
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        function startMoodCheck() {
+            const moods = ['😊 Great', '🙂 Good', '😐 Okay', '😔 Not great', '😢 Struggling'];
+            const selectedMood = prompt('How are you feeling right now?\n\n' + moods.join('\n'));
+            if (selectedMood) {
+                alert('Thank you for checking in! Your mood has been recorded.');
+            }
+        }
+        
+        function startBreathingExercise() {
+            const modal = document.getElementById('breathingModal');
+            const instructions = document.getElementById('breathingInstructions');
+            const circle = document.getElementById('breathingCircle');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            let step = 0;
+            const steps = [
+                { text: 'Breathe in slowly...', duration: 4000, scale: 'scale-150' },
+                { text: 'Hold your breath...', duration: 2000, scale: 'scale-150' },
+                { text: 'Breathe out slowly...', duration: 6000, scale: 'scale-100' },
+                { text: 'Rest...', duration: 2000, scale: 'scale-100' }
+            ];
+            
+            function nextStep() {
+                if (step < steps.length) {
+                    const currentStep = steps[step];
+                    instructions.textContent = currentStep.text;
+                    circle.style.transform = currentStep.scale;
+                    
+                    setTimeout(() => {
+                        step++;
+                        if (step < steps.length) {
+                            nextStep();
+                        } else {
+                            instructions.textContent = 'Great job! You completed the breathing exercise.';
+                            circle.style.transform = 'scale-100';
+                        }
+                    }, currentStep.duration);
+                }
+            }
+            
+            setTimeout(nextStep, 1000);
+        }
+        
+        function closeBreathingExercise() {
+            const modal = document.getElementById('breathingModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        
+        function showGratitudePrompt() {
+            const gratitude = prompt('What are you grateful for today? (Write 3 things)');
+            if (gratitude) {
+                alert('Thank you for practicing gratitude! This helps boost your mood and overall wellbeing.');
+            }
+        }
+        
+        function showCrisisResources() {
+            alert('🚨 Crisis Support Resources:\n\n• National Suicide Prevention Lifeline: 988\n• Crisis Text Line: Text HOME to 741741\n• Campus Counseling Center: Available 24/7\n• Emergency Services: 911\n\nYou are not alone. Help is available.');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Dashboard - HavenMind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <img src="/static/logo.PNG" alt="HavenMind Logo" class="h-8 w-8">
+                    <span class="font-bold text-xl text-slate-900">HavenMind Link</span>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center gap-2 bg-blue-100 px-3 py-1 rounded-full">
+                        <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span class="text-sm text-blue-700 font-medium">Licensed</span>
+                    </div>
+                    <a href="/logout" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition-colors">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Stats Overview -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-3xl shadow-lg border border-slate-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-lg text-slate-900">Escalated Cases</h3>
+                    <div class="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-red-600 mb-2">{{ escalated_cases|length }}</div>
+                <p class="text-sm text-slate-600">Requiring immediate attention</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-3xl shadow-lg border border-slate-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-lg text-slate-900">Active Sessions</h3>
+                    <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-blue-600 mb-2">12</div>
+                <p class="text-sm text-slate-600">Ongoing interventions</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-3xl shadow-lg border border-slate-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-lg text-slate-900">This Week</h3>
+                    <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-green-600 mb-2">28</div>
+                <p class="text-sm text-slate-600">Students helped</p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-3xl shadow-lg border border-slate-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-lg text-slate-900">Success Rate</h3>
+                    <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-purple-600 mb-2">94%</div>
+                <p class="text-sm text-slate-600">Positive outcomes</p>
+            </div>
+        </div>
+
+        <!-- Escalated Cases -->
+        <div class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden mb-8">
+            <div class="bg-slate-50 p-6 border-b border-slate-200">
+                <h3 class="text-xl font-bold text-slate-900">Crisis Interventions</h3>
+                <p class="text-slate-600">Students escalated by peer supporters requiring immediate professional attention</p>
+            </div>
+            
+            <div class="p-6">
+                {% if escalated_cases %}
+                    <div class="space-y-4">
+                        {% for case in escalated_cases %}
+                        <div class="p-6 {% if case.status == 'professional_booking' %}bg-blue-50 border border-blue-200{% else %}bg-red-50 border border-red-200{% endif %} rounded-2xl">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 {% if case.status == 'professional_booking' %}bg-blue-500{% else %}bg-red-500{% endif %} rounded-full flex items-center justify-center">
+                                        <span class="text-white font-bold">{{ case.username[0].upper() }}</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold {% if case.status == 'professional_booking' %}text-blue-900{% else %}text-red-900{% endif %}">{{ case.username }}</h4>
+                                        <p class="text-sm {% if case.status == 'professional_booking' %}text-blue-700{% else %}text-red-700{% endif %}">Student ID: #{{ case.user_id }} • Priority: {{ case.priority.upper() }}</p>
+                                        <p class="text-xs {% if case.status == 'professional_booking' %}text-blue-600{% else %}text-red-600{% endif %}">{% if case.status == 'professional_booking' %}Appointment Request: {{ case.created_at }}{% else %}Escalated: {{ case.created_at }}{% endif %}</p>
+                                        {% if case.status == 'professional_booking' %}
+                                        <span class="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium mt-1">📅 {{ case.appointment_date }} at {{ case.appointment_time }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm {% if case.status == 'professional_booking' %}text-blue-700{% else %}text-red-700{% endif %} mb-2">
+                                        <strong>{{ case.journal_count or 0 }}</strong> journal entries
+                                    </div>
+                                    <div class="text-sm {% if case.status == 'professional_booking' %}text-blue-700{% else %}text-red-700{% endif %}">
+                                        Avg mood: <strong>{{ "%.1f"|format(case.avg_mood * 10) if case.avg_mood else "N/A" }}/10</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white p-4 rounded-lg mb-4">
+                                <h5 class="font-semibold text-slate-900 mb-2">Initial Request:</h5>
+                                <p class="text-slate-700">"{{ case.message }}"</p>
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <button onclick="viewFullProfile({{ case.user_id }}, '{{ case.username }}')" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    View Full Profile
+                                </button>
+                                {% if case.status == 'escalated' %}
+                                <button onclick="startIntervention({{ case.id }})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    Start Intervention
+                                </button>
+                                {% elif case.status == 'professional_booking' %}
+                                <button onclick="startIntervention({{ case.id }})" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    Start Appointment
+                                </button>
+                                {% else %}
+                                <button onclick="continueProfessionalChat({{ case.id }})" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    Continue Session
+                                </button>
+                                {% endif %}
+                                <button onclick="viewChatHistory({{ case.id }})" class="bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    View Chat History
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <svg class="w-16 h-16 mx-auto mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <h3 class="text-lg font-medium text-slate-900 mb-2">No Crisis Cases</h3>
+                        <p class="text-slate-600">No students currently require crisis intervention</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Case History -->
+        {% if closed_cases %}
+        <div class="bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden mb-8">
+            <div class="bg-slate-50 p-6 border-b border-slate-200">
+                <h3 class="text-xl font-bold text-slate-900">Case History</h3>
+                <p class="text-slate-600">Recently completed professional interventions</p>
+            </div>
+            
+            <div class="p-6">
+                <div class="space-y-4">
+                    {% for case in closed_cases %}
+                    <div class="p-4 bg-green-50 border border-green-200 rounded-2xl">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white font-bold">{{ case.username[0].upper() }}</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-green-900">{{ case.username }}</h4>
+                                    <p class="text-sm text-green-700">Case #{{ case.id }} • Completed</p>
+                                    <p class="text-xs text-green-600">Session ended: {{ case.created_at }}</p>
+                                </div>
+                            </div>
+                            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                                ✅ CLOSED
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button onclick="viewFullProfile({{ case.user_id }}, '{{ case.username }}')" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors">
+                                View Profile
+                            </button>
+                            <button onclick="viewChatHistory({{ case.id }})" class="bg-slate-600 hover:bg-slate-700 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors">
+                                View Notes & History
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Assessment Tools -->
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+                <h3 class="text-xl font-bold text-slate-900 mb-6">Assessment Tools</h3>
+                <div class="space-y-4">
+                    <button class="w-full flex items-center gap-4 p-4 bg-blue-50 hover:bg-blue-100 rounded-2xl transition-colors text-left">
+                        <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
+                            <span class="text-white font-bold">📊</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">PHQ-9 Depression Scale</h4>
+                            <p class="text-sm text-slate-600">Standardized depression assessment</p>
+                        </div>
+                    </button>
+                    
+                    <button class="w-full flex items-center gap-4 p-4 bg-green-50 hover:bg-green-100 rounded-2xl transition-colors text-left">
+                        <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+                            <span class="text-white font-bold">🧠</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">GAD-7 Anxiety Assessment</h4>
+                            <p class="text-sm text-slate-600">Generalized anxiety disorder scale</p>
+                        </div>
+                    </button>
+                    
+                    <button class="w-full flex items-center gap-4 p-4 bg-red-50 hover:bg-red-100 rounded-2xl transition-colors text-left">
+                        <div class="w-12 h-12 bg-red-500 rounded-xl flex items-center justify-center">
+                            <span class="text-white font-bold">⚠️</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Suicide Risk Evaluation</h4>
+                            <p class="text-sm text-slate-600">Crisis assessment protocol</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-slate-200">
+                <h3 class="text-xl font-bold text-slate-900 mb-6">Quick Actions</h3>
+                <div class="space-y-4">
+                    <button class="w-full flex items-center gap-4 p-4 bg-purple-50 hover:bg-purple-100 rounded-2xl transition-colors text-left">
+                        <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center">
+                            <span class="text-white font-bold">📋</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Treatment Planning</h4>
+                            <p class="text-sm text-slate-600">Create intervention plans</p>
+                        </div>
+                    </button>
+                    
+                    <button class="w-full flex items-center gap-4 p-4 bg-orange-50 hover:bg-orange-100 rounded-2xl transition-colors text-left">
+                        <div class="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+                            <span class="text-white font-bold">📞</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Emergency Contacts</h4>
+                            <p class="text-sm text-slate-600">Crisis hotlines & resources</p>
+                        </div>
+                    </button>
+                    
+                    <button class="w-full flex items-center gap-4 p-4 bg-teal-50 hover:bg-teal-100 rounded-2xl transition-colors text-left">
+                        <div class="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center">
+                            <span class="text-white font-bold">📈</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900">Progress Reports</h4>
+                            <p class="text-sm text-slate-600">Track student outcomes</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Profile Modal -->
+    <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-slate-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-slate-900" id="profileTitle">Student Profile</h3>
+                    <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="profileContent" class="p-6">
+                <!-- Profile content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function viewFullProfile(userId, username) {
+            document.getElementById('profileTitle').textContent = `${username} - Complete Profile`;
+            document.getElementById('profileModal').classList.remove('hidden');
+            document.getElementById('profileModal').classList.add('flex');
+            
+            try {
+                const response = await fetch(`/api/student-profile/${userId}`);
+                const data = await response.json();
+                
+                document.getElementById('profileContent').innerHTML = `
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-lg font-bold text-slate-900 mb-4">Basic Information</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-slate-600">Username:</span>
+                                    <span class="font-medium">${data.username}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-600">Email:</span>
+                                    <span class="font-medium">${data.email}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-600">Member since:</span>
+                                    <span class="font-medium">${new Date(data.created_at).toLocaleDateString()}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-600">Journal entries:</span>
+                                    <span class="font-medium">${data.journal_count}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-slate-600">Average mood:</span>
+                                    <span class="font-medium">${data.avg_mood ? (data.avg_mood * 10).toFixed(1) + '/10' : 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-lg font-bold text-slate-900 mb-4">Recent Journal Entries</h4>
+                            <div class="space-y-3 max-h-64 overflow-y-auto">
+                                ${data.recent_entries.map(entry => `
+                                    <div class="p-3 bg-slate-50 rounded-lg">
+                                        <p class="text-sm text-slate-700 mb-2">"${entry.content.substring(0, 100)}${entry.content.length > 100 ? '...' : ''}"</p>
+                                        <div class="flex justify-between text-xs text-slate-500">
+                                            <span>Mood: ${entry.emotion_tags}</span>
+                                            <span>${new Date(entry.created_at).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h4 class="text-lg font-bold text-slate-900 mb-4">Mood Trend Analysis</h4>
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <p class="text-slate-700">Based on journal analysis, this student shows patterns of ${data.mood_analysis}.</p>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('profileContent').innerHTML = '<p class="text-red-600">Error loading profile data.</p>';
+            }
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.add('hidden');
+            document.getElementById('profileModal').classList.remove('flex');
+        }
+        
+        function continueProfessionalChat(caseId) {
+            // Open professional chat interface for ongoing intervention
+            window.open(`/professional-chat/${caseId}`, '_blank');
+        }
+
+        async function startIntervention(caseId) {
+            const confirmed = confirm(`Start professional intervention for case #${caseId}? This will notify the student and begin formal counseling protocol.`);
+            if (!confirmed) return;
+            
+            try {
+                const response = await fetch('/start-intervention', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ case_id: caseId })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert('Professional intervention started successfully. Student has been notified.');
+                    location.reload(); // Refresh to update case status
+                } else {
+                    alert('Failed to start intervention: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error starting intervention: ' + error.message);
+            }
+        }
+
+        async function viewChatHistory(caseId) {
+            try {
+                const [chatResponse, notesResponse] = await Promise.all([
+                    fetch(`/api/chat-history/${caseId}`),
+                    fetch(`/get-session-notes/${caseId}`)
+                ]);
+                
+                const messages = await chatResponse.json();
+                const notes = await notesResponse.json();
+                
+                let chatHtml = '<div class="grid md:grid-cols-2 gap-6">';
+                
+                // Chat History Column
+                chatHtml += '<div><h4 class="text-lg font-bold text-slate-900 mb-4">Chat History</h4>';
+                chatHtml += '<div class="space-y-3 max-h-96 overflow-y-auto">';
+                messages.forEach(msg => {
+                    const isStudent = msg.role === 'student';
+                    const isProfessional = msg.role === 'professional';
+                    chatHtml += `
+                        <div class="flex ${isStudent ? 'justify-end' : 'justify-start'}">
+                            <div class="${isStudent ? 'bg-blue-600 text-white' : isProfessional ? 'bg-green-600 text-white' : 'bg-slate-100'} p-3 rounded-lg max-w-md">
+                                <p class="text-sm">${msg.message}</p>
+                                <p class="text-xs opacity-70 mt-1">${msg.sender} • ${new Date(msg.created_at).toLocaleTimeString()}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                chatHtml += '</div></div>';
+                
+                // Session Notes Column
+                chatHtml += '<div><h4 class="text-lg font-bold text-slate-900 mb-4">Session Notes (Confidential)</h4>';
+                if (notes.length > 0) {
+                    chatHtml += '<div class="space-y-3 max-h-96 overflow-y-auto">';
+                    notes.forEach(note => {
+                        chatHtml += `
+                            <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
+                                <p class="text-sm text-slate-700 mb-2">${note.note}</p>
+                                <p class="text-xs text-slate-500">By: ${note.professional} • ${new Date(note.created_at).toLocaleString()}</p>
+                            </div>
+                        `;
+                    });
+                    chatHtml += '</div>';
+                } else {
+                    chatHtml += '<p class="text-slate-500 text-sm">No session notes recorded yet.</p>';
+                }
+                chatHtml += '</div>';
+                
+                chatHtml += '</div>';
+                
+                document.getElementById('profileTitle').textContent = `Case #${caseId} - Chat & Notes`;
+                document.getElementById('profileContent').innerHTML = chatHtml;
+                document.getElementById('profileModal').classList.remove('hidden');
+                document.getElementById('profileModal').classList.add('flex');
+            } catch (error) {
+                alert('Error loading chat history and notes');
+            }
+        }
+    </script>
+</body>
+</html>

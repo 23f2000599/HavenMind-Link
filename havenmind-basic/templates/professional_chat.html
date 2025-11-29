@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Session - {{ case.username }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        .chat-container { height: calc(100vh - 200px); }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-green-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-xl text-slate-900">Professional Session</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/professional-dashboard" class="text-slate-600 hover:text-slate-900">Dashboard</a>
+                    <a href="/logout" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-6 py-8">
+        <!-- Session Header -->
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold">{{ case.username[0].upper() }}</span>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">{{ case.username }}</h2>
+                        <p class="text-slate-600">Professional Intervention Session</p>
+                        <p class="text-sm text-slate-500">Case ID: #{{ case.id }} • Priority: {{ case.priority.upper() }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium mb-2">
+                        CRISIS INTERVENTION
+                    </div>
+                    <div class="text-sm text-slate-600">
+                        Session started: {{ case.created_at }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-200 flex flex-col">
+            <!-- Chat Header -->
+            <div class="p-6 border-b border-slate-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Secure Professional Chat</h3>
+                        <p class="text-slate-600">Confidential therapeutic session</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="addSessionNote()" class="bg-blue-100 text-blue-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-200">
+                            📝 Add Note
+                        </button>
+                        <button onclick="assessRisk()" class="bg-red-100 text-red-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-red-200">
+                            ⚠️ Risk Assessment
+                        </button>
+                        <button onclick="endSession()" class="bg-green-100 text-green-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-200">
+                            ✅ End Session
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="flex-1 p-6 overflow-y-auto chat-container" id="chatMessages">
+                <div class="text-center text-slate-500 py-4">
+                    Loading conversation...
+                </div>
+            </div>
+
+            <!-- Message Input -->
+            <div class="p-6 border-t border-slate-200">
+                <div class="flex gap-3 mb-3">
+                    <input type="text" id="messageText" placeholder="Type your professional response..." 
+                           class="flex-1 px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           onkeypress="handleKeyPress(event)">
+                    <button onclick="sendMessage()" class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors">
+                        Send
+                    </button>
+                </div>
+                
+                <!-- Quick Professional Responses -->
+                <div class="flex gap-2 flex-wrap">
+                    <button onclick="quickResponse('validation')" class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm hover:bg-blue-100">
+                        "I hear you and validate your feelings"
+                    </button>
+                    <button onclick="quickResponse('safety')" class="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm hover:bg-green-100">
+                        "Let's focus on your safety right now"
+                    </button>
+                    <button onclick="quickResponse('coping')" class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-sm hover:bg-purple-100">
+                        "What coping strategies have helped you before?"
+                    </button>
+                    <button onclick="quickResponse('support')" class="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-sm hover:bg-orange-100">
+                        "You're not alone in this"
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const caseId = {{ case.id }};
+        
+        // Load messages on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMessages();
+        });
+        
+        // Auto-refresh messages every 3 seconds
+        setInterval(loadMessages, 3000);
+        
+        async function loadMessages() {
+            try {
+                const response = await fetch(`/api/chat-history/${caseId}`);
+                const messages = await response.json();
+                
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = '';
+                
+                messages.forEach(msg => {
+                    const isProfessional = msg.role === 'professional';
+                    const decodedMessage = msg.message.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+                    
+                    chatMessages.innerHTML += `
+                        <div class="mb-4 flex ${isProfessional ? 'justify-end' : 'justify-start'}">
+                            <div class="max-w-md ${isProfessional ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-900'} px-4 py-2 rounded-2xl">
+                                <div class="font-medium text-sm mb-1">${isProfessional ? 'Dr. ' + msg.sender : msg.sender}</div>
+                                <div class="break-words">${decodedMessage}</div>
+                                <div class="text-xs opacity-70 mt-1">${new Date(msg.created_at).toLocaleTimeString()}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+        
+        async function sendMessage() {
+            const messageText = document.getElementById('messageText');
+            const message = messageText.value.trim();
+            
+            if (!message) return;
+            
+            try {
+                const response = await fetch('/professional-send-message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        request_id: caseId,
+                        message: message 
+                    })
+                });
+                
+                if (response.ok) {
+                    messageText.value = '';
+                    loadMessages();
+                } else {
+                    alert('Failed to send message');
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                alert('Error sending message');
+            }
+        }
+        
+        function quickResponse(type) {
+            const responses = {
+                'validation': "I hear you and validate your feelings. What you're experiencing is real and important.",
+                'safety': "Let's focus on your safety right now. Are you in a safe place? Do you have thoughts of harming yourself?",
+                'coping': "What coping strategies have helped you before? Let's identify some healthy ways to manage these feelings.",
+                'support': "You're not alone in this. I'm here to support you through this difficult time."
+            };
+            
+            document.getElementById('messageText').value = responses[type];
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        async function addSessionNote() {
+            const note = prompt('Add a session note (confidential):');
+            if (!note) return;
+            
+            try {
+                const response = await fetch('/add-session-note', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        case_id: caseId,
+                        note: note 
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert('Session note added to case file.');
+                } else {
+                    alert('Failed to add note: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error adding note: ' + error.message);
+            }
+        }
+        
+        function assessRisk() {
+            alert('Risk Assessment Protocol:\n\n1. Suicidal ideation assessment\n2. Self-harm risk evaluation\n3. Safety planning\n4. Support system review\n\nPlease document findings in case notes.');
+        }
+        
+        async function endSession() {
+            const confirmed = confirm('End this professional session? This will close the intervention and update the case status.');
+            if (!confirmed) return;
+            
+            try {
+                const response = await fetch('/end-professional-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ case_id: caseId })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    alert('Session ended successfully. Case has been closed and documented.');
+                    window.close();
+                } else {
+                    alert('Failed to end session: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error ending session: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

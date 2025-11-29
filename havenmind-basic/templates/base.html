@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HavenMind Link{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-sm border-b">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <img src="{{ url_for('static', filename='logo.PNG') }}" alt="HavenMind Logo" class="h-8 w-8">
+                    <a href="/" class="font-bold text-xl text-indigo-600">HavenMind Link</a>
+                </div>
+                <div class="flex items-center space-x-6">
+                    {% if session.user_role == 'admin' %}
+                        <a href="/logout" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition-colors">Logout</a>
+                    {% else %}
+                        <a href="/student-dashboard" class="text-gray-600 hover:text-indigo-600">Dashboard</a>
+                        <a href="/calendar" class="text-gray-600 hover:text-indigo-600">Calendar</a>
+                        <a href="/journal" class="text-gray-600 hover:text-indigo-600">Journal</a>
+                        <a href="/support" class="text-gray-600 hover:text-indigo-600">Support</a>
+                        <a href="/profile" class="text-gray-600 hover:text-indigo-600">Profile</a>
+                        <a href="/logout" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition-colors">Logout</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

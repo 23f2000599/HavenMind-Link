@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - HavenMind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="font-bold text-xl text-slate-900">HavenMind</span>
+                        <p class="text-xs text-slate-500">Reports & Analytics</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <a href="/dashboard/institution" class="text-slate-600 hover:text-slate-900 font-medium transition-colors px-3 py-2 rounded-lg hover:bg-slate-100">Dashboard</a>
+                    <a href="{{ url_for('logout') }}" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-red-200">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Reports & Analytics</h1>
+                <p class="text-slate-600">Comprehensive insights into student wellness and platform usage</p>
+            </div>
+            <div class="flex space-x-3">
+                <select class="px-4 py-2 border border-slate-300 rounded-lg">
+                    <option>Last 30 Days</option>
+                    <option>Last 90 Days</option>
+                    <option>Last 6 Months</option>
+                    <option>Last Year</option>
+                </select>
+                <button class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 rounded-lg font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
+                    Export Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Report Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-blue-50 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">Generate</button>
+                </div>
+                <h3 class="font-semibold text-slate-900 mb-2">Wellness Overview</h3>
+                <p class="text-slate-600 text-sm">Monthly wellness trends and statistics</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-green-50 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <button class="text-green-600 hover:text-green-800 text-sm font-medium">Generate</button>
+                </div>
+                <h3 class="font-semibold text-slate-900 mb-2">Engagement Report</h3>
+                <p class="text-slate-600 text-sm">Student platform usage and activity</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-red-50 rounded-lg">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+                    <button class="text-red-600 hover:text-red-800 text-sm font-medium">Generate</button>
+                </div>
+                <h3 class="font-semibold text-slate-900 mb-2">Crisis Intervention</h3>
+                <p class="text-slate-600 text-sm">Emergency response and outcomes</p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="p-3 bg-purple-50 rounded-lg">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <button class="text-purple-600 hover:text-purple-800 text-sm font-medium">Generate</button>
+                </div>
+                <h3 class="font-semibold text-slate-900 mb-2">Custom Report</h3>
+                <p class="text-slate-600 text-sm">Build your own analytics report</p>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Wellness Trends -->
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-slate-900">Wellness Trends</h3>
+                    <select class="px-3 py-1 border border-slate-300 rounded text-sm">
+                        <option>Last 6 Months</option>
+                        <option>Last Year</option>
+                    </select>
+                </div>
+                <canvas id="wellnessChart" height="300"></canvas>
+            </div>
+
+            <!-- Department Breakdown -->
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-slate-900">Wellness by Department</h3>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span class="text-xs text-slate-500">Current Period</span>
+                    </div>
+                </div>
+                <canvas id="departmentChart" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed Analytics -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <!-- Usage Statistics -->
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <h3 class="text-lg font-semibold text-slate-900 mb-6">Usage Statistics</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Daily Active Users</span>
+                        <span class="font-semibold text-slate-900">892</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-2">
+                        <div class="bg-blue-500 h-2 rounded-full" style="width: 71%"></div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Weekly Retention</span>
+                        <span class="font-semibold text-slate-900">84%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 84%"></div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-600">Support Requests</span>
+                        <span class="font-semibold text-slate-900">156</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-2">
+                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 45%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Assessment -->
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <h3 class="text-lg font-semibold text-slate-900 mb-6">Risk Assessment</h3>
+                <div class="space-y-4">
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-green-700 font-medium">Low Risk</span>
+                            <span class="text-green-800 font-bold">1,089</span>
+                        </div>
+                        <div class="w-full bg-green-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: 87%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-yellow-700 font-medium">Medium Risk</span>
+                            <span class="text-yellow-800 font-bold">135</span>
+                        </div>
+                        <div class="w-full bg-yellow-200 rounded-full h-2">
+                            <div class="bg-yellow-500 h-2 rounded-full" style="width: 11%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-red-700 font-medium">High Risk</span>
+                            <span class="text-red-800 font-bold">23</span>
+                        </div>
+                        <div class="w-full bg-red-200 rounded-full h-2">
+                            <div class="bg-red-500 h-2 rounded-full" style="width: 2%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Reports -->
+            <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                <h3 class="text-lg font-semibold text-slate-900 mb-6">Recent Reports</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-slate-900 text-sm">Monthly Wellness</p>
+                            <p class="text-slate-500 text-xs">Generated 2 hours ago</p>
+                        </div>
+                        <button class="text-indigo-600 hover:text-indigo-800 text-sm">Download</button>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-slate-900 text-sm">Crisis Response</p>
+                            <p class="text-slate-500 text-xs">Generated yesterday</p>
+                        </div>
+                        <button class="text-indigo-600 hover:text-indigo-800 text-sm">Download</button>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-slate-900 text-sm">Engagement Analysis</p>
+                            <p class="text-slate-500 text-xs">Generated 3 days ago</p>
+                        </div>
+                        <button class="text-indigo-600 hover:text-indigo-800 text-sm">Download</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Builder -->
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-900 mb-6">Custom Report Builder</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Report Type</label>
+                    <select class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                        <option>Wellness Overview</option>
+                        <option>Engagement Analysis</option>
+                        <option>Crisis Report</option>
+                        <option>Department Comparison</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Time Period</label>
+                    <select class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                        <option>Last 30 Days</option>
+                        <option>Last 90 Days</option>
+                        <option>Last 6 Months</option>
+                        <option>Last Year</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Department</label>
+                    <select class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                        <option>All Departments</option>
+                        <option>Computer Science</option>
+                        <option>Engineering</option>
+                        <option>Business</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Format</label>
+                    <select class="w-full px-3 py-2 border border-slate-300 rounded-lg">
+                        <option>PDF</option>
+                        <option>Excel</option>
+                        <option>CSV</option>
+                    </select>
+                </div>
+            </div>
+            <button class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all">
+                Generate Custom Report
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Wellness Trends Chart
+        const wellnessCtx = document.getElementById('wellnessChart').getContext('2d');
+        new Chart(wellnessCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Average Wellness Score',
+                    data: [72, 75, 68, 78, 82, 79],
+                    borderColor: '#6366F1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100 }
+                }
+            }
+        });
+
+        // Department Chart
+        const deptCtx = document.getElementById('departmentChart').getContext('2d');
+        new Chart(deptCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Computer Science', 'Engineering', 'Business', 'Arts', 'Medicine'],
+                datasets: [{
+                    label: 'Wellness Score',
+                    data: [78, 82, 75, 80, 85],
+                    backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EF4444']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100 }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

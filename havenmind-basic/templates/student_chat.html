@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Session - HavenMind</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        .chat-container { height: 400px; min-height: 400px; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-xl text-slate-900">Professional Session</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/support" class="text-slate-600 hover:text-slate-900">Back to Support</a>
+                    <a href="/logout" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-6 py-8">
+        <!-- Session Header -->
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Professional Counseling Session</h2>
+                        <p class="text-slate-600">
+                            {% if appointment.professional_name %}
+                                With {{ appointment.professional_name }}
+                            {% else %}
+                                Waiting for professional to join
+                            {% endif %}
+                        </p>
+                        {% if appointment.appointment_date and appointment.appointment_time %}
+                        <p class="text-sm text-slate-500">📅 {{ appointment.appointment_date }} at {{ appointment.appointment_time }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {% if appointment.status == 'professional' %}ACTIVE SESSION{% else %}SCHEDULED{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="bg-white rounded-2xl shadow-lg border border-slate-200 flex flex-col">
+            <!-- Chat Header -->
+            <div class="p-6 border-b border-slate-200">
+                <h3 class="text-lg font-bold text-slate-900">Secure Professional Chat</h3>
+                <p class="text-slate-600">This conversation is confidential and secure</p>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="flex-1 p-6 overflow-y-auto chat-container" id="chatMessages">
+                <div class="text-center text-slate-500 py-4">
+                    Loading conversation...
+                </div>
+            </div>
+
+            <!-- Message Input -->
+            <div class="p-6 border-t border-slate-200">
+                <div class="flex gap-3 mb-3">
+                    <input type="text" id="messageText" placeholder="Type your message..." 
+                           class="flex-1 px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           onkeypress="handleKeyPress(event)">
+                    <button onclick="sendMessage()" class="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const appointmentId = {{ appointment.id }};
+        
+        // Load messages on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMessages();
+            updateAppointmentStatus();
+            // Auto-refresh messages every 3 seconds
+            setInterval(loadMessages, 3000);
+            // Auto-refresh appointment status every 5 seconds
+            setInterval(updateAppointmentStatus, 5000);
+        });
+        
+        async function updateAppointmentStatus() {
+            try {
+                const response = await fetch(`/api/appointment-details/${appointmentId}`);
+                const data = await response.json();
+                
+                if (data.professional_name) {
+                    document.querySelector('.text-slate-600').textContent = `With ${data.professional_name}`;
+                }
+                
+                const statusBadge = document.querySelector('.bg-green-100');
+                if (data.status === 'professional') {
+                    statusBadge.textContent = 'ACTIVE SESSION';
+                    statusBadge.className = 'bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium';
+                } else {
+                    statusBadge.textContent = 'SCHEDULED';
+                    statusBadge.className = 'bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium';
+                }
+            } catch (error) {
+                console.log('Error updating appointment status');
+            }
+        }
+        
+        async function loadMessages() {
+            try {
+                const response = await fetch(`/api/chat-history/${appointmentId}`);
+                const messages = await response.json();
+                
+                const chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = '';
+                
+                if (messages.length === 0) {
+                    chatMessages.innerHTML = `
+                        <div class="text-center text-slate-500 py-8">
+                            <p class="text-lg font-medium">Session Ready</p>
+                            <p class="text-sm">
+                                {% if appointment.status == 'professional' %}
+                                    Your professional is ready to chat
+                                {% else %}
+                                    Waiting for professional to start session
+                                {% endif %}
+                            </p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                messages.forEach(msg => {
+                    const isStudent = msg.role === 'student';
+                    const isProfessional = msg.role === 'professional';
+                    
+                    chatMessages.innerHTML += `
+                        <div class="mb-4 flex ${isStudent ? 'justify-end' : 'justify-start'}">
+                            <div class="max-w-md ${isStudent ? 'bg-blue-600 text-white' : isProfessional ? 'bg-green-600 text-white' : 'bg-slate-100 text-slate-900'} px-4 py-2 rounded-2xl">
+                                <div class="font-medium text-sm mb-1">${isStudent ? 'You' : isProfessional ? 'Professional' : msg.sender}</div>
+                                <div class="break-words">${msg.message}</div>
+                                <div class="text-xs opacity-70 mt-1">${new Date(msg.created_at).toLocaleTimeString()}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            } catch (error) {
+                console.error('Error loading messages:', error);
+            }
+        }
+        
+        async function sendMessage() {
+            const messageText = document.getElementById('messageText');
+            const message = messageText.value.trim();
+            
+            if (!message) return;
+            
+            try {
+                const response = await fetch('/student-send-message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                if (response.ok) {
+                    messageText.value = '';
+                    loadMessages();
+                } else {
+                    alert('Failed to send message');
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                alert('Error sending message');
+            }
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+    </script>
+</body>
+</html>
