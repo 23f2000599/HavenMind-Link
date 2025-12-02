@@ -12,9 +12,8 @@
 
 *A comprehensive AI-powered mental health ecosystem designed specifically for students, featuring real-time behavioral monitoring, anonymous peer support, and crisis intervention capabilities.*
 
-[🚀 Live Demo](#demo) • [📖 Documentation](#documentation) • [🤝 Contributing](#contributing) • [📞 Support](#support)
-
 </div>
+
 
 ---
 
