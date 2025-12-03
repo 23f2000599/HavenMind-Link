@@ -90,23 +90,6 @@ A multi-role platform that provides:
 
 ---
 
-## 📊 **Impact Metrics & Achievements**
-
-<div align="center">
-
-| Metric | Achievement |
-|--------|-------------|
-| 🎯 **Students Supported** | 1,247+ across institutions |
-| ⚡ **Crisis Response Time** | 3.2 minutes average |
-| ✅ **Crisis Intervention Success** | 94% success rate |
-| 📈 **Mood Improvement** | 8.2/10 average score |
-| 🏆 **Competition Ranking** | 1st Place Winner |
-| 💻 **Code Quality** | 2000+ lines of production code |
-
-</div>
-
----
-
 ## 🚀 **Quick Start Guide**
 
 ### 📋 **Prerequisites**
